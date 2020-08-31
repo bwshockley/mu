@@ -12,21 +12,21 @@ from PyQt5.QtGui import QDropEvent
 import pytest
 
 
-def test_pythonlexer_keywords():
+def test_pythonlexer_keywords(qtapp):
     """
     Ensure both types of expected keywords are returned from the PythonLexer
     class.
     """
     lexer = mu.interface.editor.PythonLexer()
     # 1 = return keywords.
-    assert lexer.keywords(1) == ' '.join(keyword.kwlist + ['self', 'cls'])
+    assert lexer.keywords(1) == " ".join(keyword.kwlist + ["self", "cls"])
     # 2 = built-in functions.
-    assert lexer.keywords(2) == ' '.join(__builtins__.keys())
+    assert lexer.keywords(2) == " ".join(__builtins__.keys())
     # Anything else returns None.
     assert lexer.keywords(3) is None
 
 
-def test_csslexer_description_comments():
+def test_csslexer_description_comments(qtapp):
     """
     Ensure that if a Comment enum is passed in, the string "Comment" is
     returned. This is due to a bug in the base QsciLexerCSS class.
@@ -35,18 +35,19 @@ def test_csslexer_description_comments():
     assert "Comment" == lexer.description(lexer.Comment)
 
 
-def test_csslexer_description_other():
+def test_csslexer_description_other(qtapp):
     """
     Ensure that if a Comment enum is passed in, the string "Comment" is
     returned. This is due to a bug in the base QsciLexerCSS class.
     """
     lexer = mu.interface.editor.CssLexer()
-    with mock.patch("mu.interface.editor.QsciLexerCSS.description",
-                    return_value="foo"):
+    with mock.patch(
+        "mu.interface.editor.QsciLexerCSS.description", return_value="foo"
+    ):
         assert "foo" == lexer.description(lexer.Value)
 
 
-def test_EditorPane_init_python():
+def test_EditorPane_init_python(qtapp):
     """
     Ensure everything is set and configured given a path and text passed into
     a new instance of the EditorPane. Python file.
@@ -54,23 +55,25 @@ def test_EditorPane_init_python():
     mock_text = mock.MagicMock(return_value=None)
     mock_modified = mock.MagicMock(return_value=None)
     mock_configure = mock.MagicMock(return_value=None)
-    with mock.patch('mu.interface.editor.EditorPane.setText', mock_text), \
-            mock.patch('mu.interface.editor.EditorPane.setModified',
-                       mock_modified), \
-            mock.patch('mu.interface.editor.EditorPane.configure',
-                       mock_configure):
-        path = '/foo/bar.py'
+    with mock.patch(
+        "mu.interface.editor.EditorPane.setText", mock_text
+    ), mock.patch(
+        "mu.interface.editor.EditorPane.setModified", mock_modified
+    ), mock.patch(
+        "mu.interface.editor.EditorPane.configure", mock_configure
+    ):
+        path = "/foo/bar.py"
         text = 'print("Hello, World!")'
-        editor = mu.interface.editor.EditorPane(path, text, '\r\n')
+        editor = mu.interface.editor.EditorPane(path, text, "\r\n")
         mock_text.assert_called_once_with(text)
         mock_modified.assert_called_once_with(False)
         mock_configure.assert_called_once_with()
         assert editor.isUtf8()
-        assert editor.newline == '\r\n'
+        assert editor.newline == "\r\n"
         assert isinstance(editor.lexer, mu.interface.editor.PythonLexer)
 
 
-def test_EditorPane_init_html():
+def test_EditorPane_init_html(qtapp):
     """
     Ensure everything is set and configured given a path and text passed into
     a new instance of the EditorPane. HTML file.
@@ -78,23 +81,25 @@ def test_EditorPane_init_html():
     mock_text = mock.MagicMock(return_value=None)
     mock_modified = mock.MagicMock(return_value=None)
     mock_configure = mock.MagicMock(return_value=None)
-    with mock.patch('mu.interface.editor.EditorPane.setText', mock_text), \
-            mock.patch('mu.interface.editor.EditorPane.setModified',
-                       mock_modified), \
-            mock.patch('mu.interface.editor.EditorPane.configure',
-                       mock_configure):
-        path = '/foo/bar.html'
-        text = '<html></html>'
-        editor = mu.interface.editor.EditorPane(path, text, '\r\n')
+    with mock.patch(
+        "mu.interface.editor.EditorPane.setText", mock_text
+    ), mock.patch(
+        "mu.interface.editor.EditorPane.setModified", mock_modified
+    ), mock.patch(
+        "mu.interface.editor.EditorPane.configure", mock_configure
+    ):
+        path = "/foo/bar.html"
+        text = "<html></html>"
+        editor = mu.interface.editor.EditorPane(path, text, "\r\n")
         mock_text.assert_called_once_with(text)
         mock_modified.assert_called_once_with(False)
         mock_configure.assert_called_once_with()
         assert editor.isUtf8()
-        assert editor.newline == '\r\n'
+        assert editor.newline == "\r\n"
         assert isinstance(editor.lexer, mu.interface.editor.QsciLexerHTML)
 
 
-def test_EditorPane_init_css():
+def test_EditorPane_init_css(qtapp):
     """
     Ensure everything is set and configured given a path and text passed into
     a new instance of the EditorPane. CSS file.
@@ -102,30 +107,32 @@ def test_EditorPane_init_css():
     mock_text = mock.MagicMock(return_value=None)
     mock_modified = mock.MagicMock(return_value=None)
     mock_configure = mock.MagicMock(return_value=None)
-    with mock.patch('mu.interface.editor.EditorPane.setText', mock_text), \
-            mock.patch('mu.interface.editor.EditorPane.setModified',
-                       mock_modified), \
-            mock.patch('mu.interface.editor.EditorPane.configure',
-                       mock_configure):
-        path = '/foo/bar.css'
-        text = 'h1 { color: red; }'
-        editor = mu.interface.editor.EditorPane(path, text, '\r\n')
+    with mock.patch(
+        "mu.interface.editor.EditorPane.setText", mock_text
+    ), mock.patch(
+        "mu.interface.editor.EditorPane.setModified", mock_modified
+    ), mock.patch(
+        "mu.interface.editor.EditorPane.configure", mock_configure
+    ):
+        path = "/foo/bar.css"
+        text = "h1 { color: red; }"
+        editor = mu.interface.editor.EditorPane(path, text, "\r\n")
         mock_text.assert_called_once_with(text)
         mock_modified.assert_called_once_with(False)
         mock_configure.assert_called_once_with()
         assert editor.isUtf8()
-        assert editor.newline == '\r\n'
+        assert editor.newline == "\r\n"
         assert isinstance(editor.lexer, mu.interface.editor.QsciLexerCSS)
 
 
-def test_EditorPane_configure():
+def test_EditorPane_configure(qtapp):
     """
     Check the expected configuration takes place. NOTE - this is checking the
     expected attributes are configured, not what the actual configuration
     values may be. I.e. we're checking that, say, setIndentationWidth is
     called.
     """
-    ep = mu.interface.editor.EditorPane('/foo/bar.py', 'baz')
+    ep = mu.interface.editor.EditorPane("/foo/bar.py", "baz")
     ep.setFont = mock.MagicMock()
     ep.setUtf8 = mock.MagicMock()
     ep.setAutoIndent = mock.MagicMock()
@@ -168,33 +175,40 @@ def test_EditorPane_configure():
     assert ep.setAnnotationDisplay.call_count == 1
     assert ep.selectionChanged.connect.call_count == 1
     ep.indicatorDefine.assert_has_calls(
-        [mock.call(ep.SquiggleIndicator,
-                   ep.check_indicators['error']['id']),
-         mock.call(ep.SquiggleIndicator,
-                   ep.check_indicators['style']['id']),
-         mock.call(ep.StraightBoxIndicator,
-                   ep.search_indicators['selection']['id'])],
-        any_order=True)
+        [
+            mock.call(
+                ep.SquiggleIndicator, ep.check_indicators["error"]["id"]
+            ),
+            mock.call(
+                ep.SquiggleIndicator, ep.check_indicators["style"]["id"]
+            ),
+            mock.call(
+                ep.StraightBoxIndicator,
+                ep.search_indicators["selection"]["id"],
+            ),
+        ],
+        any_order=True,
+    )
     assert ep.set_zoom.call_count == 1
 
 
-def test_Editor_connect_margin():
+def test_Editor_connect_margin(qtapp):
     """
     Ensure that the passed in function is connected to the marginClick event.
     """
     mock_fn = mock.MagicMock()
-    ep = mu.interface.editor.EditorPane('/foo/bar.py', 'baz')
+    ep = mu.interface.editor.EditorPane("/foo/bar.py", "baz")
     ep.marginClicked = mock.MagicMock()
     ep.connect_margin(mock_fn)
     assert ep.marginClicked.connect.call_count == 1
 
 
-def test_Editor_connect_margin_ignores_margin_4():
+def test_Editor_connect_margin_ignores_margin_4(qtapp):
     """
     Ensure that the margin click handler is not called if margin 4 is clicked.
     """
     mock_fn = mock.MagicMock()
-    ep = mu.interface.editor.EditorPane('/foo/bar.py', 'baz')
+    ep = mu.interface.editor.EditorPane("/foo/bar.py", "baz")
     ep.connect_margin(mock_fn)
     margin = 4
     line = 0
@@ -203,12 +217,12 @@ def test_Editor_connect_margin_ignores_margin_4():
     assert mock_fn.call_count == 0
 
 
-def test_Editor_connect_margin_1_works():
+def test_Editor_connect_margin_1_works(qtapp):
     """
     Ensure that the margin click handler is called if margin 1 is clicked.
     """
     mock_fn = mock.MagicMock()
-    ep = mu.interface.editor.EditorPane('/foo/bar.py', 'baz')
+    ep = mu.interface.editor.EditorPane("/foo/bar.py", "baz")
     ep.connect_margin(mock_fn)
     margin = 1
     line = 0
@@ -224,34 +238,35 @@ def test_Editor_connect_margin_1_works():
     # to fail intermittently on macOS.
 
 
-def test_EditorPane_set_theme():
+def test_EditorPane_set_theme(qtapp):
     """
     Check all the expected configuration calls are made to ensure the widget's
     theme is updated.
     """
-    api = ['api help text', ]
-    ep = mu.interface.editor.EditorPane('/foo/bar.py', 'baz')
+    api = ["api help text"]
+    ep = mu.interface.editor.EditorPane("/foo/bar.py", "baz")
     ep.lexer = mock.MagicMock()
     mock_api = mock.MagicMock()
-    with mock.patch('mu.interface.editor.QsciAPIs',
-                    return_value=mock_api) as mapi:
+    with mock.patch(
+        "mu.interface.editor.QsciAPIs", return_value=mock_api
+    ) as mapi:
         ep.set_api(api)
         mapi.assert_called_once_with(ep.lexer)
-        mock_api.add.assert_called_once_with('api help text')
+        mock_api.add.assert_called_once_with("api help text")
         mock_api.prepare.assert_called_once_with()
 
 
-def test_EditorPane_set_zoom():
+def test_EditorPane_set_zoom(qtapp):
     """
     Ensure the t-shirt size is turned into a call to parent's zoomTo.
     """
-    ep = mu.interface.editor.EditorPane('/foo/bar.py', 'baz')
+    ep = mu.interface.editor.EditorPane("/foo/bar.py", "baz")
     ep.zoomTo = mock.MagicMock()
-    ep.set_zoom('xl')
+    ep.set_zoom("xl")
     ep.zoomTo.assert_called_once_with(8)
 
 
-def test_EditorPane_label():
+def test_EditorPane_label(qtapp):
     """
     Ensure the correct label is returned given a set of states:
 
@@ -260,19 +275,21 @@ def test_EditorPane_label():
 
     If the text is modified append an asterisk.
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
-    assert ep.label == 'untitled'
-    ep = mu.interface.editor.EditorPane('/foo/bar.py', 'baz')
-    assert ep.label == 'bar.py'
+    ep = mu.interface.editor.EditorPane(None, "baz")
+    assert ep.label == "untitled"
+    ep = mu.interface.editor.EditorPane("/foo/bar.py", "baz")
+    assert ep.label == "bar.py"
+    assert ep.title == "bar.py"
     ep.isModified = mock.MagicMock(return_value=True)
-    assert ep.label == 'bar.py *'
+    assert ep.label == "bar.py"
+    assert ep.title == "bar.py •"
 
 
-def test_EditorPane_reset_annotations():
+def test_EditorPane_reset_annotations(qtapp):
     """
     Ensure annotation state is reset.
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     ep.clearAnnotations = mock.MagicMock()
     ep.markerDeleteAll = mock.MagicMock()
     ep.reset_search_indicators = mock.MagicMock()
@@ -284,174 +301,216 @@ def test_EditorPane_reset_annotations():
     ep.reset_check_indicators.assert_called_once_with()
 
 
-def test_EditorPane_reset_check_indicators():
+def test_EditorPane_reset_check_indicators(qtapp):
     """
     Ensure code check indicators are reset.
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     ep.clearIndicatorRange = mock.MagicMock()
     ep.check_indicators = {
-        'error': {
-            'id': 19,
-            'markers': {
-                1: [{'column': 0, 'line_no': 1, 'message': 'indicator detail'}]
+        "error": {
+            "id": 19,
+            "markers": {
+                1: [{"column": 0, "line_no": 1, "message": "indicator detail"}]
             },
         },
-        'style': {
-            'id': 20,
-            'markers': {
-                2: [{'code': 'x', 'column': 0, 'line_no': 1,
-                     'message': 'indicator detail'}]
-            }
-        }
+        "style": {
+            "id": 20,
+            "markers": {
+                2: [
+                    {
+                        "code": "x",
+                        "column": 0,
+                        "line_no": 1,
+                        "message": "indicator detail",
+                    }
+                ]
+            },
+        },
     }
     ep.reset_check_indicators()
     ep.clearIndicatorRange.assert_has_calls(
         [mock.call(1, 0, 1, 999999, 19), mock.call(1, 0, 1, 999999, 20)],
-        any_order=True)
+        any_order=True,
+    )
     for indicator in ep.check_indicators:
-        assert ep.check_indicators[indicator]['markers'] == {}
-        assert ep.check_indicators[indicator]['markers'] == {}
+        assert ep.check_indicators[indicator]["markers"] == {}
+        assert ep.check_indicators[indicator]["markers"] == {}
 
 
-def test_EditorPane_reset_search_indicators():
+def test_EditorPane_reset_search_indicators(qtapp):
     """
     Ensure search indicators are reset.
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     ep.clearIndicatorRange = mock.MagicMock()
     ep.search_indicators = {
-        'selection': {'id': 10, 'positions': [
-            {'line_start': 1, 'col_start': 2, 'line_end': 3, 'col_end': 4},
-            {'line_start': 5, 'col_start': 4, 'line_end': 3, 'col_end': 2}
-        ]}
+        "selection": {
+            "id": 10,
+            "positions": [
+                {"line_start": 1, "col_start": 2, "line_end": 3, "col_end": 4},
+                {"line_start": 5, "col_start": 4, "line_end": 3, "col_end": 2},
+            ],
+        }
     }
     ep.reset_search_indicators()
     ep.clearIndicatorRange.assert_has_calls(
-        [mock.call(1, 2, 3, 4, 10), mock.call(5, 4, 3, 2, 10)],
-        any_order=True)
+        [mock.call(1, 2, 3, 4, 10), mock.call(5, 4, 3, 2, 10)], any_order=True
+    )
     for indicator in ep.search_indicators:
-        assert ep.search_indicators[indicator]['positions'] == []
-        assert ep.search_indicators[indicator]['positions'] == []
+        assert ep.search_indicators[indicator]["positions"] == []
+        assert ep.search_indicators[indicator]["positions"] == []
 
 
-def test_EditorPane_annotate_code():
+def test_EditorPane_annotate_code(qtapp):
     """
     Given a dict containing representations of feedback on the code contained
     within the EditorPane instance, ensure the correct indicators and markers
     are set.
     """
     feedback = {
-        17: [{'line_no': 17,
-              'message': 'Syntax error',
-              'source': 'for word, pitch in words\n',
-              'column': 24},
-             {'line_no': 17,
-              'message': 'Too many blank lines (4) above this line',
-              'column': 0,
-              'code': 'E303'}],
-        18: [{'line_no': 18,
-              'message': 'Unexpected indentation',
-              'column': 4,
-              'code': 'E113'}],
-        21: [{'line_no': 21,
-              'message': 'No newline at end of file',
-              'column': 50,
-              'code': 'W292'}]}
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+        17: [
+            {
+                "line_no": 17,
+                "message": "Syntax error",
+                "source": "for word, pitch in words\n",
+                "column": 24,
+            },
+            {
+                "line_no": 17,
+                "message": "Too many blank lines (4) above this line",
+                "column": 0,
+                "code": "E303",
+            },
+        ],
+        18: [
+            {
+                "line_no": 18,
+                "message": "Unexpected indentation",
+                "column": 4,
+                "code": "E113",
+            }
+        ],
+        21: [
+            {
+                "line_no": 21,
+                "message": "No newline at end of file",
+                "column": 50,
+                "code": "W292",
+            }
+        ],
+    }
+    ep = mu.interface.editor.EditorPane(None, "baz")
     ep.markerAdd = mock.MagicMock()
     ep.ensureLineVisible = mock.MagicMock()
     ep.fillIndicatorRange = mock.MagicMock()
-    ep.annotate_code(feedback, 'error')
+    ep.annotate_code(feedback, "error")
     assert ep.fillIndicatorRange.call_count == 3  # once for each message.
     ep.ensureLineVisible.assert_called_once_with(17)  # first problem visible
 
 
-def test_EditorPane_debugger_at_line():
+def test_EditorPane_debugger_at_line(qtapp):
     """
     Ensure the right calls are made to highlight the referenced line with the
     DEBUG_INDICATOR.
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
-    ep.text = mock.MagicMock(return_value='baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
+    ep.text = mock.MagicMock(return_value="baz")
     ep.reset_debugger_highlight = mock.MagicMock()
     ep.fillIndicatorRange = mock.MagicMock()
     ep.ensureLineVisible = mock.MagicMock()
     ep.debugger_at_line(99)
     ep.reset_debugger_highlight.assert_called_once_with()
     ep.text.assert_called_once_with(99)
-    ep.fillIndicatorRange.assert_called_once_with(99, 0, 99, 3,
-                                                  ep.DEBUG_INDICATOR)
+    ep.fillIndicatorRange.assert_called_once_with(
+        99, 0, 99, 3, ep.DEBUG_INDICATOR
+    )
     ep.ensureLineVisible.assert_called_once_with(99)
 
 
-def test_EditorPane_debugger_at_line_windows_line_endings():
+def test_EditorPane_debugger_at_line_windows_line_endings(qtapp):
     """
     Ensure the right calls are made to highlight the referenced line with the
     DEBUG_INDICATOR.
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
-    ep.text = mock.MagicMock(return_value='baz\r\n')
+    ep = mu.interface.editor.EditorPane(None, "baz")
+    ep.text = mock.MagicMock(return_value="baz\r\n")
     ep.reset_debugger_highlight = mock.MagicMock()
     ep.fillIndicatorRange = mock.MagicMock()
     ep.ensureLineVisible = mock.MagicMock()
     ep.debugger_at_line(99)
     ep.reset_debugger_highlight.assert_called_once_with()
     ep.text.assert_called_once_with(99)
-    ep.fillIndicatorRange.assert_called_once_with(99, 0, 99, 3,
-                                                  ep.DEBUG_INDICATOR)
+    ep.fillIndicatorRange.assert_called_once_with(
+        99, 0, 99, 3, ep.DEBUG_INDICATOR
+    )
     ep.ensureLineVisible.assert_called_once_with(99)
 
 
-def test_EditorPane_reset_debugger_highlight():
+def test_EditorPane_reset_debugger_highlight(qtapp):
     """
     Ensure all DEBUG_INDICATORs are removed from the editor.
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     ep.lines = mock.MagicMock(return_value=3)
-    ep.text = mock.MagicMock(return_value='baz')
+    ep.text = mock.MagicMock(return_value="baz")
     ep.clearIndicatorRange = mock.MagicMock()
     ep.reset_debugger_highlight()
     assert ep.clearIndicatorRange.call_count == 3
-    assert ep.clearIndicatorRange.call_args_list[0][0] == (0, 0, 0, 3,
-                                                           ep.DEBUG_INDICATOR)
+    assert ep.clearIndicatorRange.call_args_list[0][0] == (
+        0,
+        0,
+        0,
+        3,
+        ep.DEBUG_INDICATOR,
+    )
 
 
-def test_EditorPane_show_annotations():
+def test_EditorPane_show_annotations(qtapp):
     """
     Ensure the annotations are shown in "sentence" case and with an arrow to
     indicate the line to which they refer.
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     ep.check_indicators = {
-        'error': {
-            'markers': {
+        "error": {
+            "markers": {
                 1: [
-                    {'message': 'message 1', 'line_no': 1},
-                    {'message': 'message 2', 'line_no': 1},
+                    {"message": "message 1", "line_no": 1},
+                    {"message": "message 2", "line_no": 1},
                 ]
             }
         }
     }
     ep.annotate = mock.MagicMock()
     ep.show_annotations()
-    ep.annotate.assert_called_once_with(1,
-                                        '\u2191 message 1\n\u2191 message 2',
-                                        ep.annotationDisplay())
+    ep.annotate.assert_called_once_with(
+        1, "\u2191 message 1\n\u2191 message 2", ep.annotationDisplay()
+    )
 
 
-def test_EditorPane_find_next_match():
+def test_EditorPane_find_next_match(qtapp):
     """
     Ensures that the expected arg values are passed through to QsciScintilla
     for highlighting matched text.
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     ep.findFirst = mock.MagicMock(return_value=True)
-    assert ep.find_next_match('foo', from_line=10, from_col=5,
-                              case_sensitive=True, wrap_around=False)
-    ep.findFirst.assert_called_once_with('foo', False, True, True, False,
-                                         forward=True, line=10, index=5,
-                                         show=False, posix=False)
+    assert ep.find_next_match(
+        "foo", from_line=10, from_col=5, case_sensitive=True, wrap_around=False
+    )
+    ep.findFirst.assert_called_once_with(
+        "foo",
+        False,
+        True,
+        True,
+        False,
+        forward=True,
+        line=10,
+        index=5,
+        show=False,
+        posix=False,
+    )
 
 
 def _ranges_in_text(text, search_for):
@@ -468,7 +527,7 @@ def _ranges_in_text(text, search_for):
             yield n_line, match.start(), n_line, match.end()
 
 
-def test_EditorPane_highlight_selected_matches_no_selection():
+def test_EditorPane_highlight_selected_matches_no_selection(qtapp):
     """
     Ensure that if the current selection is empty then all highlights
     are cleared.
@@ -479,13 +538,13 @@ def test_EditorPane_highlight_selected_matches_no_selection():
     """
     text = "foo bar foo"
 
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     ep.setText(text)
     ep.setSelection(-1, -1, -1, -1)
-    assert ep.search_indicators['selection']['positions'] == []
+    assert ep.search_indicators["selection"]["positions"] == []
 
 
-def test_EditorPane_highlight_selected_spans_two_or_more_lines():
+def test_EditorPane_highlight_selected_spans_two_or_more_lines(qtapp):
     """
     Ensure that if the current selection spans two or more lines then all
     highlights are cleared.
@@ -496,13 +555,13 @@ def test_EditorPane_highlight_selected_spans_two_or_more_lines():
     """
     text = "foo\nbar\nfoo"
 
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     ep.setText(text)
     ep.setSelection(0, 0, 1, 1)
-    assert ep.search_indicators['selection']['positions'] == []
+    assert ep.search_indicators["selection"]["positions"] == []
 
 
-def test_EditorPane_highlight_selected_matches_multi_word():
+def test_EditorPane_highlight_selected_matches_multi_word(qtapp):
     """
     Ensure that if the current selection is not a single word then don't cause
     a search/highlight call.
@@ -514,20 +573,25 @@ def test_EditorPane_highlight_selected_matches_multi_word():
     text = "foo bar foo"
     search_for = "foo bar"
 
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     ep.setText(text)
     for range in _ranges_in_text(text, search_for):
         break
     ep.setSelection(*range)
-    assert ep.search_indicators['selection']['positions'] == []
+    assert ep.search_indicators["selection"]["positions"] == []
 
 
-@pytest.mark.parametrize('text, search_for', [
-    ("foo bar foo baz foo", "foo"),
-    ("résumé foo bar foo baz foo", "foo"),
-    ("résumé bar résumé baz résumé", "résumé"),
-])
-def test_EditorPane_highlight_selected_matches_with_match(text, search_for):
+@pytest.mark.parametrize(
+    "text, search_for",
+    [
+        ("foo bar foo baz foo", "foo"),
+        ("résumé foo bar foo baz foo", "foo"),
+        ("résumé bar résumé baz résumé", "résumé"),
+    ],
+)
+def test_EditorPane_highlight_selected_matches_with_match(
+    qtapp, text, search_for
+):
     """
     Ensure that if the current selection is a single word then it causes the
     expected search/highlight call.
@@ -535,7 +599,7 @@ def test_EditorPane_highlight_selected_matches_with_match(text, search_for):
     There appears to be no way to iterate over indicators within the editor.
     So we're using the search_indicators structure as a proxy
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     ep.setText(text)
 
     #
@@ -551,16 +615,18 @@ def test_EditorPane_highlight_selected_matches_with_match(text, search_for):
             (line_start, col_start, line_end, col_end) = range
             expected_ranges.append(
                 dict(
-                    line_start=line_start, col_start=col_start,
-                    line_end=line_end, col_end=col_end
+                    line_start=line_start,
+                    col_start=col_start,
+                    line_end=line_end,
+                    col_end=col_end,
                 )
             )
 
     ep.setSelection(*selected_range)
-    assert ep.search_indicators['selection']['positions'] == expected_ranges
+    assert ep.search_indicators["selection"]["positions"] == expected_ranges
 
 
-def test_EditorPane_highlight_selected_matches_incomplete_word():
+def test_EditorPane_highlight_selected_matches_incomplete_word(qtapp):
     """
     Ensure that if the current selection is not a complete word
     then no ranges are highlighted.
@@ -571,16 +637,16 @@ def test_EditorPane_highlight_selected_matches_incomplete_word():
     text = "foo bar foo baz foo"
     search_for = "fo"
 
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     ep.setText(text)
     for range in _ranges_in_text(text, search_for):
         ep.setSelection(*range)
         break
 
-    assert ep.search_indicators['selection']['positions'] == []
+    assert ep.search_indicators["selection"]["positions"] == []
 
 
-def test_EditorPane_highlight_selected_matches_cursor_remains():
+def test_EditorPane_highlight_selected_matches_cursor_remains(qtapp):
     """
     Ensure that if a selection is made, the text cursor remains in the
     same place after any matching terms have been highlighted.
@@ -590,7 +656,7 @@ def test_EditorPane_highlight_selected_matches_cursor_remains():
     """
     text = "foo bar foo"
     search_for = "foo"
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     ep.setText(text)
 
     select_n_chars = 2
@@ -610,56 +676,62 @@ def test_EditorPane_highlight_selected_matches_cursor_remains():
     assert ep.getCursorPosition() == (line1, index1 - select_n_chars)
 
 
-def test_EditorPane_selection_change_listener():
+def test_EditorPane_selection_change_listener(qtapp):
     """
     Enusure that is there is a change to the selected text then controll is
     passed to highlight_selected_matches.
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     ep.getSelection = mock.MagicMock(return_value=(1, 1, 2, 2))
     ep.highlight_selected_matches = mock.MagicMock()
     ep.selection_change_listener()
-    assert ep.previous_selection['line_start'] == 1
-    assert ep.previous_selection['col_start'] == 1
-    assert ep.previous_selection['line_end'] == 2
-    assert ep.previous_selection['col_end'] == 2
+    assert ep.previous_selection["line_start"] == 1
+    assert ep.previous_selection["col_start"] == 1
+    assert ep.previous_selection["line_end"] == 2
+    assert ep.previous_selection["col_end"] == 2
     assert ep.highlight_selected_matches.call_count == 1
 
 
-def test_EditorPane_drop_event():
+def test_EditorPane_drop_event(qtapp):
     """
     If there's a drop event associated with files, cause them to be passed into
     Mu's existing file loading code.
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     m = mock.MagicMock()
     ep.open_file = mock.MagicMock()
     ep.open_file.emit = m
     data = QMimeData()
-    data.setUrls([QUrl('file://test/path.py'), QUrl('file://test/path.hex'),
-                  QUrl('file://test/path.txt')])
-    evt = QDropEvent(QPointF(0, 0), Qt.CopyAction, data,
-                     Qt.LeftButton, Qt.NoModifier)
+    data.setUrls(
+        [
+            QUrl("file://test/path.py"),
+            QUrl("file://test/path.hex"),
+            QUrl("file://test/path.txt"),
+        ]
+    )
+    evt = QDropEvent(
+        QPointF(0, 0), Qt.CopyAction, data, Qt.LeftButton, Qt.NoModifier
+    )
     ep.dropEvent(evt)
     # Upstream _load will handle invalid file type (.txt).
     assert m.call_count == 3
 
 
-def test_EditorPane_drop_event_not_file():
+def test_EditorPane_drop_event_not_file(qtapp):
     """
     If the drop event isn't for files (for example, it may be for dragging and
     dropping text into the editor), then pass the handling up to QScintilla.
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     event = mock.MagicMock()
     event.mimeData().hasUrls.return_value = False
     event.isAccepted.return_value = False
-    with mock.patch('mu.interface.editor.QsciScintilla.dropEvent') as mock_de:
+    with mock.patch("mu.interface.editor.QsciScintilla.dropEvent") as mock_de:
         ep.dropEvent(event)
         mock_de.assert_called_once_with(event)
 
 
-def test_EditorPane_toggle_line_starts_with_hash():
+def test_EditorPane_toggle_line_starts_with_hash(qtapp):
     """
     If the line starts with a hash ("#") immediately followed by code, then
     uncomment it.
@@ -672,11 +744,11 @@ def test_EditorPane_toggle_line_starts_with_hash():
 
     foo
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
-    assert ep.toggle_line('    #foo') == '    foo'
+    ep = mu.interface.editor.EditorPane(None, "baz")
+    assert ep.toggle_line("    #foo") == "    foo"
 
 
-def test_EditorPane_toggle_line_starts_with_hash_space():
+def test_EditorPane_toggle_line_starts_with_hash_space(qtapp):
     """
     If the line starts with a PEP-8 compliant hash followed by a space ("# ")
     then uncomment it.
@@ -691,11 +763,20 @@ def test_EditorPane_toggle_line_starts_with_hash_space():
 
     (Note the space is dropped.)
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
-    assert ep.toggle_line('    # foo') == '    foo'
+    ep = mu.interface.editor.EditorPane(None, "baz")
+    assert ep.toggle_line("    # foo") == "    foo"
 
 
-def test_EditorPane_toggle_line_normal_line():
+def test_EditorPane_toggle_line_preserves_embedded_comment(qtapp):
+    """
+    If the line being un-commented has a trailing comment, only the first
+    comment marker should be removed.
+    """
+    ep = mu.interface.editor.EditorPane(None, "baz")
+    assert ep.toggle_line("    # foo # comment") == "    foo # comment"
+
+
+def test_EditorPane_toggle_line_normal_line(qtapp):
     """
     If the line is an uncommented line of text, then comment it with hash-space
     ("# ").
@@ -708,101 +789,164 @@ def test_EditorPane_toggle_line_normal_line():
 
     # foo
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
-    assert ep.toggle_line('    foo') == '#     foo'
+    ep = mu.interface.editor.EditorPane(None, "baz")
+    assert ep.toggle_line("    foo") == "#     foo"
 
 
-def test_EditorPane_toggle_line_whitespace_line():
+def test_EditorPane_toggle_line_whitespace_line(qtapp):
     """
     If the line is simply empty or contains only whitespace, then ignore it and
     return as-is.
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
-    assert ep.toggle_line('    ') == '    '
+    ep = mu.interface.editor.EditorPane(None, "baz")
+    assert ep.toggle_line("    ") == "    "
 
 
-def test_EditorPane_toggle_comments_no_selection():
+def test_EditorPane_toggle_line_preserves_multi_comment(qtapp):
+    """
+    If the line starts with two or more "#" together, then return it as-is.
+    """
+    ep = mu.interface.editor.EditorPane(None, "baz")
+    assert ep.toggle_line("## double") == "## double"
+    assert ep.toggle_line("    ## space-double") == "    ## space-double"
+    assert ep.toggle_line("    ### triplet") == "    ### triplet"
+
+
+def test_EditorPane_toggle_comments_no_selection(qtapp):
     """
     If no text is selected, toggle the line currently containing the cursor.
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     ep.hasSelectedText = mock.MagicMock(return_value=False)
     ep.getCursorPosition = mock.MagicMock(return_value=(1, 0))
-    ep.text = mock.MagicMock(return_value='foo')
+    ep.text = mock.MagicMock(return_value="foo")
     ep.setSelection = mock.MagicMock()
     ep.replaceSelectedText = mock.MagicMock()
     ep.toggle_comments()
     assert ep.setSelection.call_count == 2
     # Final setSelection call re-selects the changed line.
     assert mock.call(1, 0, 1, 4) == ep.setSelection.call_args_list[1]
-    ep.replaceSelectedText.assert_called_once_with('# foo')
+    ep.replaceSelectedText.assert_called_once_with("# foo")
 
 
-def test_EditorPane_toggle_comments_selected_normal_lines():
+def test_EditorPane_toggle_comments_selected_normal_lines(qtapp):
     """
     Check normal lines of code are properly commented and subsequently
     highlighted.
     """
-    ep = mu.interface.editor.EditorPane(None, 'foo\nbar\nbaz')
+    ep = mu.interface.editor.EditorPane(None, "foo\nbar\nbaz")
     ep.hasSelectedText = mock.MagicMock(return_value=True)
     ep.getSelection = mock.MagicMock(return_value=(0, 0, 2, 2))
-    ep.selectedText = mock.MagicMock(return_value='foo\nbar\nbaz')
+    ep.selectedText = mock.MagicMock(return_value="foo\nbar\nbaz")
     ep.replaceSelectedText = mock.MagicMock()
     ep.setSelection = mock.MagicMock()
     ep.toggle_comments()
-    ep.replaceSelectedText.assert_called_once_with('# foo\n# bar\n# baz')
+    ep.replaceSelectedText.assert_called_once_with("# foo\n# bar\n# baz")
     ep.setSelection.assert_called_once_with(0, 0, 2, 4)
 
 
-def test_EditorPane_toggle_comments_selected_hash_comment_lines():
+def test_EditorPane_toggle_comments_selected_hash_comment_lines(qtapp):
     """
     Check commented lines starting with "#" are now uncommented.
     """
-    ep = mu.interface.editor.EditorPane(None, '#foo\n#bar\n#baz')
+    ep = mu.interface.editor.EditorPane(None, "#foo\n#bar\n#baz")
     ep.hasSelectedText = mock.MagicMock(return_value=True)
     ep.getSelection = mock.MagicMock(return_value=(0, 0, 2, 3))
-    ep.selectedText = mock.MagicMock(return_value='#foo\n#bar\n#baz')
+    ep.selectedText = mock.MagicMock(return_value="#foo\n#bar\n#baz")
     ep.replaceSelectedText = mock.MagicMock()
     ep.setSelection = mock.MagicMock()
     ep.toggle_comments()
-    ep.replaceSelectedText.assert_called_once_with('foo\nbar\nbaz')
+    ep.replaceSelectedText.assert_called_once_with("foo\nbar\nbaz")
     ep.setSelection.assert_called_once_with(0, 0, 2, 2)
 
 
-def test_EditorPane_toggle_comments_selected_hash_space_comment_lines():
+def test_EditorPane_toggle_comments_selected_hash_space_comment_lines(qtapp):
     """
     Check commented lines starting with "# " are now uncommented.
     """
-    ep = mu.interface.editor.EditorPane(None, '# foo\n# bar\n# baz')
+    ep = mu.interface.editor.EditorPane(None, "# foo\n# bar\n# baz")
     ep.hasSelectedText = mock.MagicMock(return_value=True)
     ep.getSelection = mock.MagicMock(return_value=(0, 0, 2, 4))
-    ep.selectedText = mock.MagicMock(return_value='# foo\n# bar\n# baz')
+    ep.selectedText = mock.MagicMock(return_value="# foo\n# bar\n# baz")
     ep.replaceSelectedText = mock.MagicMock()
     ep.setSelection = mock.MagicMock()
     ep.toggle_comments()
-    ep.replaceSelectedText.assert_called_once_with('foo\nbar\nbaz')
+    ep.replaceSelectedText.assert_called_once_with("foo\nbar\nbaz")
     ep.setSelection.assert_called_once_with(0, 0, 2, 2)
 
 
-def test_EditorPane_wheelEvent():
+def test_EditorPane_toggle_comments_selected_spaces_before_comment_mark(qtapp):
+    """
+    Check commented lines starting with "# " are now uncommented and on the
+    last line selection ends at "baz" when there are spaces before the comment
+    mark.
+    """
+    ep = mu.interface.editor.EditorPane(None, "# foo\n# bar\n    # baz")
+    ep.hasSelectedText = mock.MagicMock(return_value=True)
+    ep.getSelection = mock.MagicMock(return_value=(0, 0, 2, 6))
+    ep.selectedText = mock.MagicMock(return_value="# foo\n# bar\n    # baz")
+    ep.replaceSelectedText = mock.MagicMock()
+    ep.setSelection = mock.MagicMock()
+    ep.toggle_comments()
+    ep.replaceSelectedText.assert_called_once_with("foo\nbar\n    baz")
+    ep.setSelection.assert_called_once_with(0, 0, 2, 4)
+
+
+def test_EditorPane_toggle_comments_selected_spaces_after_comment_mark(qtapp):
+    """
+    Check commented lines starting with "# " are now uncommented and on the
+    last line selection ends at "baz" when there are spaces between the comment
+    mark and the text.
+    """
+    ep = mu.interface.editor.EditorPane(None, "# foo\n# bar\n#     baz")
+    ep.hasSelectedText = mock.MagicMock(return_value=True)
+    ep.getSelection = mock.MagicMock(return_value=(0, 0, 2, 6))
+    ep.selectedText = mock.MagicMock(return_value="# foo\n# bar\n#     baz")
+    ep.replaceSelectedText = mock.MagicMock()
+    ep.setSelection = mock.MagicMock()
+    ep.toggle_comments()
+    ep.replaceSelectedText.assert_called_once_with("foo\nbar\n    baz")
+    ep.setSelection.assert_called_once_with(0, 0, 2, 4)
+
+
+def test_EditorPane_toggle_comments_selection_follows_len_change(qtapp):
+    """
+    Check commented lines starting with "# " are now uncommented one level and
+    selection adjustment doesn't assume lines starting with "# " had comment
+    markers added instead of removed.
+    """
+    ep = mu.interface.editor.EditorPane(None, "# foo\n# bar\n# # baz")
+    ep.hasSelectedText = mock.MagicMock(return_value=True)
+    ep.getSelection = mock.MagicMock(return_value=(0, 0, 2, 6))
+    ep.selectedText = mock.MagicMock(return_value="# foo\n# bar\n# # baz")
+    ep.replaceSelectedText = mock.MagicMock()
+    ep.setSelection = mock.MagicMock()
+    ep.toggle_comments()
+    ep.replaceSelectedText.assert_called_once_with("foo\nbar\n# baz")
+    ep.setSelection.assert_called_once_with(0, 0, 2, 4)
+
+
+def test_EditorPane_wheelEvent(qtapp):
     """
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     mock_app = mock.MagicMock()
     mock_app.keyboardModifiers.return_value = []
-    with mock.patch("mu.interface.editor.QApplication", mock_app), \
-            mock.patch("mu.interface.editor.QsciScintilla.wheelEvent") as mw:
+    with mock.patch("mu.interface.editor.QApplication", mock_app), mock.patch(
+        "mu.interface.editor.QsciScintilla.wheelEvent"
+    ) as mw:
         ep.wheelEvent(None)
         mw.assert_called_once_with(None)
 
 
-def test_EditorPane_wheelEvent_with_modifier_ignored():
+def test_EditorPane_wheelEvent_with_modifier_ignored(qtapp):
     """
     """
-    ep = mu.interface.editor.EditorPane(None, 'baz')
+    ep = mu.interface.editor.EditorPane(None, "baz")
     mock_app = mock.MagicMock()
-    mock_app.keyboardModifiers.return_value = ["CTRL", ]
-    with mock.patch("mu.interface.editor.QApplication", mock_app), \
-            mock.patch("mu.interface.editor.QsciScintilla.wheelEvent") as mw:
+    mock_app.keyboardModifiers.return_value = ["CTRL"]
+    with mock.patch("mu.interface.editor.QApplication", mock_app), mock.patch(
+        "mu.interface.editor.QsciScintilla.wheelEvent"
+    ) as mw:
         ep.wheelEvent(None)
         assert mw.call_count == 0
